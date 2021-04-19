@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Common.Encoding">
+      <HintPath>..\..\..\Common\Common.Encoding\Common.Encoding\bin\Debug\net5.0\Common.Encoding.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Pagination">
+      <HintPath>..\..\..\Common\Common.Pagination\Common.Pagination\bin\Debug\net5.0\Common.Pagination.dll</HintPath>
+    </Reference>
+    <Reference Include="Data.Users">
+      <HintPath>..\..\..\Data\Data.Users\Data.Users\bin\Debug\net5.0\Data.Users.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.2" />
+  </ItemGroup>
+
+</Project>
