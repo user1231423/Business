@@ -1,6 +1,6 @@
-﻿namespace Business.Users.Services
+﻿namespace Business.Authentication.Services
 {
-    using Data.Users.Models;
+    using Data.Authentication.Models;
     using Microsoft.IdentityModel.Tokens;
     using System;
     using System.Configuration;

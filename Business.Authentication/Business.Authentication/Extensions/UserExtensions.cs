@@ -1,11 +1,11 @@
-﻿using Data.Users;
+﻿using Data.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Users.Extensions
+namespace Business.Authentication.Extensions
 {
     public static class UserExtensions
     {

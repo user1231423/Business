@@ -1,4 +1,4 @@
-﻿using Data.Users.Models;
+﻿using Data.Authentication.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Users.Middleware
+namespace Business.Authentication.Middleware
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class AuthorizeAttribute : Attribute, IAuthorizationFilter

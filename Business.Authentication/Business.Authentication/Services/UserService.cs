@@ -1,17 +1,17 @@
-﻿using Business.Users.Extensions;
-using Business.Users.Models;
+﻿using Business.Authentication.Extensions;
+using Business.Authentication.Models;
 using Common.Encoding.Hash;
 using Common.Pagination;
 using Common.Pagination.Models;
-using Data.Users;
-using Data.Users.Models;
+using Data.Authentication;
+using Data.Authentication.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Users.Services
+namespace Business.Authentication.Services
 {
     public class UserService
     {

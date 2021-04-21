@@ -1,6 +1,6 @@
-﻿namespace Business.Users.Models
+﻿namespace Business.Authentication.Models
 {
-    using Data.Users.Models;
+    using Data.Authentication.Models;
 
     public class AuthenticateResponse
     {

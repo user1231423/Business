@@ -1,4 +1,4 @@
-﻿using Business.Users.Services;
+﻿using Business.Authentication.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Users.Middleware
+namespace Business.Authentication.Middleware
 {
     public class JwtMiddleware
     {

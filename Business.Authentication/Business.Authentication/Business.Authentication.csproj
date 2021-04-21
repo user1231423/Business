@@ -11,8 +11,8 @@
     <Reference Include="Common.Pagination">
       <HintPath>..\..\..\Common\Common.Pagination\Common.Pagination\bin\Debug\net5.0\Common.Pagination.dll</HintPath>
     </Reference>
-    <Reference Include="Data.Users">
-      <HintPath>..\..\..\Data\Data.Users\Data.Users\bin\Debug\net5.0\Data.Users.dll</HintPath>
+    <Reference Include="Data.Authentication">
+      <HintPath>..\..\..\Data\Data.Authentication\Data.Authentication\bin\Debug\net5.0\Data.Authentication.dll</HintPath>
     </Reference>
   </ItemGroup>
 
