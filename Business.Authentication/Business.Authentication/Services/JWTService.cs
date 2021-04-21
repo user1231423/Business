@@ -1,5 +1,6 @@
 ﻿namespace Business.Authentication.Services
 {
+    using Common.Encoding.Hash;
     using Data.Authentication.Models;
     using Microsoft.IdentityModel.Tokens;
     using System;
@@ -19,12 +20,12 @@
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
-            var key = Encoding.ASCII.GetBytes(ConfigurationManager.AppSettings["JWTSecret"]);
+            var key = Encoding.ASCII.GetBytes(ConfigurationManager.AppSettings["Secret"].ToMD5());
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("Id", user.Id.ToString()) }),
-                Expires = DateTime.UtcNow.AddSeconds(validTime),
+                Expires = validTime == 0 ? DateTime.UtcNow.AddDays(7) : DateTime.UtcNow.AddSeconds(validTime), //If valid time is 0 token is valid for 7 days by default
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

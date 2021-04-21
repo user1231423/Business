@@ -16,7 +16,7 @@ namespace Business.Authentication.Extensions
         /// <param name="pEntity"></param>
         /// <param name="pEntity2"></param>
         /// <param name="pContext"></param>
-        public static void UpdateModifiedFields<T>(this T pEntity, T pEntity2, ref UsersDbContext pContext)
+        public static void UpdateModifiedFields<T>(this T pEntity, T pEntity2, ref AuthenticationDbContext pContext)
         {
             var entry = pContext.Entry(pEntity);
             foreach (var prop in entry.Properties)

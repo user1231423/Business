@@ -1,30 +1,31 @@
-﻿using Business.Authentication.Extensions;
-using Business.Authentication.Models;
-using Common.Encoding.Hash;
-using Common.Pagination;
-using Common.Pagination.Models;
-using Data.Authentication;
-using Data.Authentication.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Business.Authentication.Services
+﻿namespace Business.Authentication.Services
 {
+    using Business.Authentication.Extensions;
+    using Business.Authentication.Models;
+    using Common.Encoding.Hash;
+    using Common.Pagination;
+    using Common.Pagination.Models;
+    using Data.Authentication;
+    using Data.Authentication.Models;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    /// <summary>
+    /// User service class
+    /// </summary>
     public class UserService
     {
         /// <summary>
         /// Users db context
         /// </summary>
-        private UsersDbContext _context;
+        private AuthenticationDbContext _context;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
-        public UserService(UsersDbContext context)
+        public UserService(AuthenticationDbContext context)
         {
             _context = context;
         }
@@ -39,7 +40,8 @@ namespace Business.Authentication.Services
             try
             {
                 return _context.Users.ToPagedList(pagination);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 throw e;
             }
@@ -55,7 +57,8 @@ namespace Business.Authentication.Services
             try
             {
                 return _context.Users.SingleOrDefault(x => x.Id == id);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 throw e;
             }
@@ -75,7 +78,8 @@ namespace Business.Authentication.Services
                 await _context.SaveChangesAsync();
 
                 return user.Id;
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 throw e;
             }
@@ -104,7 +108,8 @@ namespace Business.Authentication.Services
                 await _context.SaveChangesAsync();
 
                 return oldUser.Id;
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 throw e;
             }
@@ -141,11 +146,11 @@ namespace Business.Authentication.Services
         /// </summary>
         /// <param name="authRequest"></param>
         /// <returns></returns>
-        public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest authRequest)
+        public AuthenticateResponse Authenticate(AuthenticateRequest authRequest)
         {
             try
             {
-                var user = _context.Users.SingleOrDefault(x => x.Email.ToLower() == authRequest.Email.ToLower() && x.Password.ToSHA256() == authRequest.Password.ToSHA256());
+                var user = _context.Users.SingleOrDefault(x => x.Email.ToLower() == authRequest.Email.ToLower() && x.Password == authRequest.Password.ToSHA256());
 
                 // return null if user not found
                 if (user == null)
@@ -156,7 +161,7 @@ namespace Business.Authentication.Services
 
                 return new AuthenticateResponse(user, token);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
