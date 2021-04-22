@@ -20,7 +20,7 @@
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
-            var key = Encoding.ASCII.GetBytes(ConfigurationManager.AppSettings["Secret"].ToMD5());
+            var key = Convert.FromBase64String(ConfigurationManager.AppSettings["Secret"]);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
