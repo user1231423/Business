@@ -9,8 +9,15 @@ using System.Threading.Tasks;
 
 namespace Business.Authentication.Attributes
 {
+    /// <summary>
+    /// Authorize filter
+    /// </summary>
     public class AuthorizeAttribute : Attribute, IAuthorizationFilter
     {
+        /// <summary>
+        /// Executed on authorization
+        /// </summary>
+        /// <param name="context"></param>
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             if (!context.HttpContext.User.Identity.IsAuthenticated)

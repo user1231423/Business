@@ -12,6 +12,9 @@
     using System.Text;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Authentication middleware
+    /// </summary>
     public class AuthenticationMiddleware
     {
         private readonly RequestDelegate _next;

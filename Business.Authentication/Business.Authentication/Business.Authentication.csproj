@@ -24,4 +24,9 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\APIS\API.Authentication\Data.Authentication.Globalization\Data.Authentication.Globalization.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.ExceptionHandler\Common.ExceptionHandler\Common.ExceptionHandler.csproj" />
+  </ItemGroup>
+
 </Project>

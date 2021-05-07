@@ -1,11 +1,14 @@
 ﻿namespace Business.Authentication.Services
 {
+    using API.Authentication.Database;
     using Business.Authentication.Extensions;
     using Business.Authentication.Models;
     using Common.Encoding.Hash;
+    using Common.ExceptionHandler.Exceptions;
     using Common.Pagination;
     using Common.Pagination.Models;
     using Data.Authentication;
+    using Data.Authentication.Globalization.Errors;
     using Data.Authentication.Models;
     using System;
     using System.Linq;
@@ -41,9 +44,9 @@
             {
                 return _context.Users.ToPagedList(pagination);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -58,9 +61,9 @@
             {
                 return _context.Users.SingleOrDefault(x => x.Id == id);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -79,9 +82,9 @@
 
                 return user.Id;
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -98,7 +101,7 @@
                 var oldUser = Load(id);
 
                 if (oldUser == null)
-                    throw new ArgumentException("User " + id + " not found");
+                    throw new NotFoundException(Errors.UserNotFound);
 
                 //Update old user fields
                 oldUser.UpdateModifiedFields(user, ref _context);
@@ -109,9 +112,9 @@
 
                 return oldUser.Id;
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -127,7 +130,7 @@
                 var user = Load(id);
 
                 if (user == null)
-                    throw new ArgumentException("User " + id + " not found");
+                    throw new NotFoundException(Errors.UserNotFound);
 
                 _context.Remove(user);
 
@@ -135,9 +138,9 @@
 
                 return user.Id;
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -152,18 +155,18 @@
             {
                 var user = _context.Users.SingleOrDefault(x => x.Email.ToLower() == authRequest.Email.ToLower() && x.Password == authRequest.Password.ToSHA256());
 
-                // return null if user not found
+                // throw exception if user was not found
                 if (user == null)
-                    throw new ArgumentException("User not found");
+                    throw new NotFoundException(Errors.UserNotFound);
 
                 // authentication successful so generate jwt token
                 var token = JWTService.GenerateJwtToken(user, authRequest.ValidTime);
 
                 return new AuthenticateResponse(user, token);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
     }
