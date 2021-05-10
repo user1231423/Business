@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\APIS\API.Authentication\Data.Authentication.Globalization\Data.Authentication.Globalization.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.ExceptionHandler\Common.ExceptionHandler\Common.ExceptionHandler.csproj" />
+    <ProjectReference Include="..\..\..\Data\Data.Authentication.Globalization\Data.Authentication.Globalization\Data.Authentication.Globalization.csproj" />
   </ItemGroup>
 
 </Project>

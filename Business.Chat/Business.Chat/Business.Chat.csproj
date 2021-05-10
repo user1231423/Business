@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Common.ExceptionHandler\Common.ExceptionHandler\Common.ExceptionHandler.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Pagination\Common.Pagination\Common.Pagination.csproj" />
+    <ProjectReference Include="..\..\..\Data\Data.Chat\Data.Chat\Data.Chat.csproj" />
+  </ItemGroup>
+
+</Project>
