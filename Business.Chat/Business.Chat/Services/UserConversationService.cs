@@ -1,7 +1,11 @@
 ﻿using Business.Chat.Extensions;
+using Business.Chat.Filters;
 using Common.ExceptionHandler.Exceptions;
+using Common.Pagination;
+using Common.Pagination.Models;
 using Data.Chat;
 using Data.Chat.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +28,40 @@ namespace Business.Chat.Services
         public UserConversationService(ChatDbContext context)
         {
             _context = context;
+        }
+
+        /// <summary>
+        /// Filter 
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="pagination"></param>
+        /// <returns></returns>
+        public  PagedList<UserConversation> Filter(UserConversationFilter filter, PaginationParams pagination)
+        {
+            try
+            {
+                var query = _context.UserConversations.AsQueryable();
+
+                if (filter.IncludeConversation)
+                    query = query.Include(x => x.Conversation);
+
+                if (filter.IncludeUser)
+                    query = query.Include(x => x.User);
+
+                if (filter.UserId != null)
+                    query = query.Where(x => x.UserId == filter.UserId);
+
+                if (filter.ConversationId != null)
+                    query = query.Where(x => x.ConversationId == filter.ConversationId);
+
+                if (filter.Status != null)
+                    query = query.Where(x => x.Status == filter.Status);
+
+                return query.ToPagedList(pagination);
+            }catch
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -57,6 +95,23 @@ namespace Business.Chat.Services
             try
             {
                 return _context.UserConversations.Where(x => x.UserId == userId).ToList();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Load user conversations
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public UserConversation Load(int userId, int conversationId)
+        {
+            try
+            {
+                return _context.UserConversations.Where(x => x.UserId == userId && x.ConversationId == conversationId).FirstOrDefault();
             }
             catch
             {
