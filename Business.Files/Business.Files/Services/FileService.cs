@@ -105,7 +105,7 @@ namespace Business.Files.Services
         /// <param name="file"></param>
         /// <param name="formFile"></param>
         /// <returns></returns>
-        public async Task<int> Update(int id, File file, IFormFile formFile)
+        public async Task<int> Update(int id, File file)
         {
             try
             {
@@ -118,6 +118,39 @@ namespace Business.Files.Services
                 oldFile.UpdateModifiedFields(file, ref _context);
 
                 oldFile.UpdateDate = DateTime.Now;
+
+                _context.Update(oldFile);
+
+                await _context.SaveChangesAsync();
+
+                return oldFile.Id;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Update file
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="formFile"></param>
+        /// <returns></returns>
+        public async Task<int> Update(int id, IFormFile formFile)
+        {
+            try
+            {
+                var oldFile = Load(id);
+
+                if (oldFile == null)
+                    throw new NotFoundException("File not found");
+
+                oldFile.UpdateDate = DateTime.Now;
+
+                oldFile.ContentType = formFile.ContentType;
+                oldFile.OriginalName = formFile.FileName;
+                oldFile.Extension = formFile.FileName.Split(".").LastOrDefault();
 
                 _context.Update(oldFile);
 
