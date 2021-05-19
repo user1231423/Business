@@ -3,6 +3,7 @@ using Common.ExceptionHandler.Exceptions;
 using Common.Pagination;
 using Common.Pagination.Models;
 using Data.Chat;
+using Data.Chat.Globalization.Errors;
 using Data.Chat.Models;
 using System;
 using System.Collections.Generic;
@@ -87,7 +88,7 @@ namespace Business.Chat.Services
         /// Update read message
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="user"></param>
+        /// <param name="readMessage"></param>
         /// <returns></returns>
         public async Task<int> Update(int id, ReadMessage readMessage)
         {
@@ -96,12 +97,10 @@ namespace Business.Chat.Services
                 var oldReadMessage = Load(id);
 
                 if (oldReadMessage == null)
-                    throw new NotFoundException("Read message not found");
+                    throw new NotFoundException(Errors.ReadMessageNotFound);
 
                 //Update read message fields
                 oldReadMessage.UpdateModifiedFields(readMessage, ref _context);
-
-                oldReadMessage.UpdateDate = DateTime.Now;
 
                 _context.Update(oldReadMessage);
 
@@ -127,7 +126,7 @@ namespace Business.Chat.Services
                 var readMessage = Load(id);
 
                 if (readMessage == null)
-                    throw new NotFoundException("Read message not found");
+                    throw new NotFoundException(Errors.ReadMessageNotFound);
 
                 _context.Remove(readMessage);
 

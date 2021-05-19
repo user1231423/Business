@@ -1,6 +1,10 @@
 ﻿using Business.Chat.Extensions;
+using Business.Chat.Filters;
 using Common.ExceptionHandler.Exceptions;
+using Common.Pagination;
+using Common.Pagination.Models;
 using Data.Chat;
+using Data.Chat.Globalization.Errors;
 using Data.Chat.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -25,6 +29,44 @@ namespace Business.Chat.Services
         public MessageService(ChatDbContext context)
         {
             _context = context;
+        }
+
+        /// <summary>
+        /// Filter 
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="pagination"></param>
+        /// <returns></returns>
+        public PagedList<Message> Filter(MessageFilter filter, PaginationParams pagination)
+        {
+            try
+            {
+                var query = _context.Messages.AsQueryable();
+
+                if (filter.Id != null)
+                    query = query.Where(x => x.Id == filter.Id);
+
+                if (filter.UserId != null)
+                    query = query.Where(x => x.UserId == filter.UserId);
+
+                if (filter.ConversationId != null)
+                    query = query.Where(x => x.ConversationId == filter.ConversationId);
+
+                if (filter.CreateDateEq != null)
+                    query = query.Where(x => x.CreateDate == filter.CreateDateEq);
+
+                if (filter.CreateDateGte != null)
+                    query = query.Where(x => x.CreateDate >= filter.CreateDateGte);
+
+                if (filter.CreateDateLte != null)
+                    query = query.Where(x => x.CreateDate <= filter.CreateDateLte);
+
+                return query.ToPagedList(pagination);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -109,7 +151,7 @@ namespace Business.Chat.Services
                 var oldMessage = Load(id);
 
                 if (oldMessage == null)
-                    throw new NotFoundException("Message not found");
+                    throw new NotFoundException(Errors.MessageNotFound);
 
                 //Update old message fields
                 oldMessage.UpdateModifiedFields(message, ref _context);
@@ -140,7 +182,7 @@ namespace Business.Chat.Services
                 var message = Load(id);
 
                 if (message == null)
-                    throw new NotFoundException("Message not found");
+                    throw new NotFoundException(Errors.MessageNotFound);
 
                 _context.Remove(message);
 

@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Common.ExceptionHandler\Common.ExceptionHandler\Common.ExceptionHandler.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.Pagination\Common.Pagination\Common.Pagination.csproj" />
+    <ProjectReference Include="..\..\..\Data\Data.Chat.Globalization\Data.Chat.Globalization\Data.Chat.Globalization.csproj" />
     <ProjectReference Include="..\..\..\Data\Data.Chat\Data.Chat\Data.Chat.csproj" />
   </ItemGroup>
 

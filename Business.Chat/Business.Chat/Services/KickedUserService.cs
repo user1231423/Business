@@ -2,6 +2,7 @@
 using Common.Pagination;
 using Common.Pagination.Models;
 using Data.Chat;
+using Data.Chat.Globalization.Errors;
 using Data.Chat.Models;
 using System;
 using System.Collections.Generic;
@@ -78,7 +79,7 @@ namespace Business.Chat.Services
                 var kickedUser = _context.KickedUsers.SingleOrDefault(x => x.ConversationId == conversationId && x.UserId == userId);
 
                 if (kickedUser == null)
-                    throw new NotFoundException("Kicked user not found");
+                    throw new NotFoundException(Errors.KickedUserNotFound);
 
                 _context.Remove(kickedUser);
 

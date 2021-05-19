@@ -4,6 +4,7 @@ using Common.ExceptionHandler.Exceptions;
 using Common.Pagination;
 using Common.Pagination.Models;
 using Data.Chat;
+using Data.Chat.Globalization.Errors;
 using Data.Chat.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -132,7 +133,7 @@ namespace Business.Chat.Services
                 var oldUserConversation = _context.UserConversations.SingleOrDefault(x => x.Id == id);
 
                 if (oldUserConversation == null)
-                    throw new NotFoundException("Message not found");
+                    throw new NotFoundException(Errors.UserConversationNotFound);
 
                 //Update old message fields
                 oldUserConversation.UpdateModifiedFields(oldUserConversation, ref _context);
@@ -163,7 +164,7 @@ namespace Business.Chat.Services
                 var userConversation = _context.UserConversations.SingleOrDefault(x => x.Id == id);
 
                 if (userConversation == null)
-                    throw new NotFoundException("User conversation not found");
+                    throw new NotFoundException(Errors.UserConversationNotFound);
 
                 _context.Remove(userConversation);
 
