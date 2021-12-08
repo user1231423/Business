@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Authentication.Models
+namespace Business.Authentication.Settings
 {
     public class JwtSettings : IJwtSettings
     {

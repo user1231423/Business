@@ -1,8 +1,10 @@
 ﻿using Business.Files.Extensions;
+using Business.Files.Interfaces;
 using Common.ExceptionHandler.Exceptions;
 using Data.Files;
 using Data.Files.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Business.Files.Services
 {
-    public class FileService
+    public class FileService : IFileService
     {
         /// <summary>
         /// Files db context
@@ -20,12 +22,18 @@ namespace Business.Files.Services
         private FilesDbContext _context;
 
         /// <summary>
+        /// File settings
+        /// </summary>
+        private readonly IFileSettings _fileSettings;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
-        public FileService(FilesDbContext context)
+        public FileService(FilesDbContext context, IFileSettings fileSettings)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _fileSettings = fileSettings ?? throw new ArgumentNullException(nameof(fileSettings));
         }
 
         /// <summary>
@@ -42,7 +50,7 @@ namespace Business.Files.Services
                     ContentType = file.ContentType,
                     Extension = file.FileName.Split(".").LastOrDefault(),
                     OriginalName = file.FileName,
-                    Path = ConfigurationManager.AppSettings["DefaultFilesUploadLocation"],
+                    Path = _fileSettings.DefaultFilesUploadLocation,
                     CreateDate = DateTime.Now
                 };
 
@@ -69,11 +77,11 @@ namespace Business.Files.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public File Load(int id)
+        public async Task<File> Load(int id)
         {
             try
             {
-                return _context.Files.SingleOrDefault(x => x.Id == id);
+                return await _context.Files.SingleOrDefaultAsync(x => x.Id == id);
             }
             catch
             {
@@ -86,11 +94,11 @@ namespace Business.Files.Services
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public File Load(string key)
+        public async Task<File> Load(string key)
         {
             try
             {
-                return _context.Files.SingleOrDefault(x => x.Key == key);
+                return await _context.Files.SingleOrDefaultAsync(x => x.Key == key);
             }
             catch
             {
@@ -109,7 +117,7 @@ namespace Business.Files.Services
         {
             try
             {
-                var oldFile = Load(id);
+                var oldFile = await Load(id);
 
                 if (oldFile == null)
                     throw new NotFoundException("File not found");
@@ -141,7 +149,7 @@ namespace Business.Files.Services
         {
             try
             {
-                var oldFile = Load(id);
+                var oldFile = await Load(id);
 
                 if (oldFile == null)
                     throw new NotFoundException("File not found");
@@ -176,7 +184,7 @@ namespace Business.Files.Services
         {
             try
             {
-                var file = Load(id);
+                var file = await Load(id);
 
                 if (file == null)
                     throw new NotFoundException("File not found");
