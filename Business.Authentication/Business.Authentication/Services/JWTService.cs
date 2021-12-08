@@ -1,6 +1,9 @@
 ﻿namespace Business.Authentication.Services
 {
+    using Business.Authentication.Interfaces;
+    using Business.Authentication.Models;
     using Common.Encoding.Hash;
+    using Common.Extensions;
     using Data.Authentication.Models;
     using Microsoft.IdentityModel.Tokens;
     using System;
@@ -9,29 +12,57 @@
     using System.Security.Claims;
     using System.Text;
 
-    public static class JWTService
+    public class JwtService : IJwtService
     {
+        /// <summary>
+        /// Jwt settings
+        /// </summary>
+        private readonly IJwtSettings jwtSettings;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="jwtSettings"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public JwtService(IJwtSettings jwtSettings)
+        {
+            this.jwtSettings = jwtSettings ?? throw new ArgumentNullException(nameof(jwtSettings));
+        }
+
         /// <summary>
         /// Generate JWT Token
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public static string GenerateJwtToken(User user, int validTime)
+        public AuthenticateResponse GenerateJwtToken(User user, int validTime)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityTokenHandler tokenHandler = new();
 
-            var key = Convert.FromBase64String(ConfigurationManager.AppSettings["Secret"]);
+            byte[] key = Convert.FromBase64String(jwtSettings.Secret);
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+            SecurityTokenDescriptor tokenDescriptor = new()
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("Id", user.Id.ToString()) }),
+                Subject = new ClaimsIdentity(new[] {
+                    new Claim("Id", user.Id.ToString()),
+                    new Claim("Email", user.Email),
+                }),
+                TokenType = "Bearer",
                 Expires = validTime == 0 ? DateTime.UtcNow.AddDays(7) : DateTime.UtcNow.AddSeconds(validTime), //If valid time is 0 token is valid for 7 days by default
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return tokenHandler.WriteToken(token);
+            AuthenticateResponse authRepsonse = new()
+            {
+                Token = tokenHandler.WriteToken(token),
+                ExpiresIn = token.ValidFrom.GetLifetimeInSeconds(token.ValidTo),
+                TokenType = "Bearer",
+                ValidFrom = token.ValidFrom,
+                ValidTo = token.ValidTo
+            };
+
+            return authRepsonse;
         }
     }
 }

@@ -2,22 +2,23 @@
 {
     using API.Authentication.Database;
     using Business.Authentication.Extensions;
+    using Business.Authentication.Interfaces;
     using Business.Authentication.Models;
     using Common.Encoding.Hash;
     using Common.ExceptionHandler.Exceptions;
     using Common.Pagination;
     using Common.Pagination.Models;
-    using Data.Authentication;
     using Data.Authentication.Globalization.Errors;
     using Data.Authentication.Models;
+    using Microsoft.EntityFrameworkCore;
     using System;
-    using System.Linq;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     /// <summary>
     /// User service class
     /// </summary>
-    public class UserService
+    public class UserService : IUserService
     {
         /// <summary>
         /// Users db context
@@ -25,24 +26,38 @@
         private AuthenticationDbContext _context;
 
         /// <summary>
+        /// Jwt service
+        /// </summary>
+        private readonly IJwtService _jwtService;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
-        public UserService(AuthenticationDbContext context)
+        /// <param name="jwtService"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public UserService(AuthenticationDbContext context, IJwtService jwtService)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
         }
 
         /// <summary>
         /// List users
         /// </summary>
         /// <param name="pagination"></param>
-        /// <returns></returns>
-        public PagedList<User> List(PaginationParams pagination)
+        /// <returns>Paginated list with all users</returns>
+        public async Task<PagedList<User>> ListAsync(PaginationParams pagination)
         {
             try
             {
-                return _context.Users.ToPagedList(pagination);
+                //Get paginated users from db
+                List<User> paginatedUsers = await _context.Users.PageBy(x => x.Id, pagination).ToListAsync();
+
+                //Get total count of users in db
+                int totalCount = await _context.Users.CountAsync();
+
+                return new PagedList<User>(paginatedUsers, totalCount, pagination.CurrentPage, pagination.PageSize);
             }
             catch
             {
@@ -54,12 +69,12 @@
         /// Load user
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
-        public User Load(int id)
+        /// <returns>User</returns>
+        public async Task<User> LoadAsync(int id)
         {
             try
             {
-                return _context.Users.SingleOrDefault(x => x.Id == id);
+                return await _context.Users.SingleOrDefaultAsync(x => x.Id == id);
             }
             catch
             {
@@ -71,8 +86,8 @@
         /// Save user
         /// </summary>
         /// <param name="user"></param>
-        /// <returns></returns>
-        public async Task<int> Save(User user)
+        /// <returns>Id</returns>
+        public async Task<int> SaveAsync(User user)
         {
             try
             {
@@ -93,12 +108,12 @@
         /// </summary>
         /// <param name="id"></param>
         /// <param name="user"></param>
-        /// <returns></returns>
-        public async Task<int> Update(int id, User user)
+        /// <returns>Id</returns>
+        public async Task<int> UpdateAsync(int id, User user)
         {
             try
             {
-                var oldUser = Load(id);
+                var oldUser = await LoadAsync(id);
 
                 if (oldUser == null)
                     throw new NotFoundException(Errors.UserNotFound);
@@ -122,12 +137,12 @@
         /// Delete user
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
-        public async Task<int> Delete(int id)
+        /// <returns>Id</returns>
+        public async Task<int> DeleteAsync(int id)
         {
             try
             {
-                var user = Load(id);
+                var user = await LoadAsync(id);
 
                 if (user == null)
                     throw new NotFoundException(Errors.UserNotFound);
@@ -149,20 +164,22 @@
         /// </summary>
         /// <param name="authRequest"></param>
         /// <returns></returns>
-        public AuthenticateResponse Authenticate(AuthenticateRequest authRequest)
+        public async Task<AuthenticateResponse> AuthenticateAsync(AuthenticateRequest authRequest)
         {
             try
             {
-                var user = _context.Users.SingleOrDefault(x => x.Email.ToLower() == authRequest.Email.ToLower() && x.Password == authRequest.Password.ToSHA256());
+                var user = await _context.Users.SingleOrDefaultAsync(x => x.Email.ToLower() == authRequest.Email.ToLower());
 
-                // throw exception if user was not found
+                // throw exception if user with given email was not found
                 if (user == null)
-                    throw new NotFoundException(Errors.UserNotFound);
+                    throw new NotFoundException(Errors.UserEmailNotFound);
 
-                // authentication successful so generate jwt token
-                var token = JWTService.GenerateJwtToken(user, authRequest.ValidTime);
+                // throw exception if passwords don't match
+                if (user.Password != authRequest.Password.ToSHA256())
+                    throw new BadRequestException(Errors.UserPasswordsDontMatch);
 
-                return new AuthenticateResponse(user, token);
+                // authentication successful so generate jwt token and return it
+                return _jwtService.GenerateJwtToken(user, authRequest.ValidTime);
             }
             catch
             {

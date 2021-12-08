@@ -1,40 +1,33 @@
 ﻿namespace Business.Authentication.Models
 {
     using Data.Authentication.Models;
+    using System;
 
     public class AuthenticateResponse
     {
         /// <summary>
-        /// Id
+        /// Valid from
         /// </summary>
-        public int Id { get; set; }
+        public DateTime ValidFrom { get; set; }
 
         /// <summary>
-        /// First name
+        /// Valid to
         /// </summary>
-        public string FirstName { get; set; }
+        public DateTime ValidTo { get; set; }
 
         /// <summary>
-        /// Last name
+        /// Expires in
         /// </summary>
-        public string LastName { get; set; }
+        public int ExpiresIn { get; set; }
+
+        /// <summary>
+        /// Token type
+        /// </summary>
+        public string TokenType { get; set; }
 
         /// <summary>
         /// Token
         /// </summary>
         public string Token { get; set; }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="token"></param>
-        public AuthenticateResponse(User user, string token)
-        {
-            Id = user.Id;
-            FirstName = user.FirstName;
-            LastName = user.LastName;
-            Token = token;
-        }
     }
 }

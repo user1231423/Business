@@ -86,7 +86,7 @@ namespace Business.Chat.Services
                     query = query.Include(x => x.Messages);
 
                 if (users)
-                    query = query.Include(x => x.Users);   
+                    query = query.Include(x => x.Users);
                 
                 if (kickedUsers)
                     query = query.Include(x => x.KickedUsers);   

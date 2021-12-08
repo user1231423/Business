@@ -1,7 +1,9 @@
 ﻿namespace Business.Authentication.Middleware
 {
+    using Business.Authentication.Interfaces;
     using Business.Authentication.Services;
     using Common.Encoding.Hash;
+    using Common.Extensions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.IdentityModel.Tokens;
     using System;
@@ -31,15 +33,15 @@
         /// <param name="context"></param>
         /// <param name="userService"></param>
         /// <returns></returns>
-        public async Task Invoke(HttpContext context, UserService userService)
+        public async Task Invoke(HttpContext context, IUserService userService, IJwtSettings jwtSettings)
         {
             //Reading the AuthHeader which is signed with JWT
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string token = context.GetAuthorizationHeader();
 
             if (token != null)
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Convert.FromBase64String(ConfigurationManager.AppSettings["Secret"]);
+                var key = Convert.FromBase64String(jwtSettings.Secret);
                 var jwtToken = new JwtSecurityToken();
 
                 //If validate token fails then jwt Token is inválid
@@ -67,10 +69,10 @@
 
                     var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "Id").Value);
 
-                    var user = userService.Load(userId);
-
+                    var user = await userService.LoadAsync(userId);
                     // Attach user to context on successful jwt validation
                     //context.Items["User"] = user;
+
 
                     // Identity Principal
                     var claims = new[]

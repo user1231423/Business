@@ -12,6 +12,7 @@ namespace Business.Authentication.Attributes
     /// <summary>
     /// Authorize filter
     /// </summary>
+    [AttributeUsage(AttributeTargets.All)]
     public class AuthorizeAttribute : Attribute, IAuthorizationFilter
     {
         /// <summary>
