@@ -1,12 +1,10 @@
 ﻿namespace Business.Authentication.Services
 {
-    using API.Authentication.Database;
-    using Business.Authentication.Extensions;
     using Business.Authentication.Interfaces;
     using Business.Authentication.Models;
+    using Common.Data.Interfaces;
     using Common.Encoding.Hash;
     using Common.ExceptionHandler.Exceptions;
-    using Common.Pagination;
     using Common.Pagination.Models;
     using Data.Authentication.Globalization.Errors;
     using Data.Authentication.Models;
@@ -21,9 +19,9 @@
     public class UserService : IUserService
     {
         /// <summary>
-        /// Users db context
+        /// User repository
         /// </summary>
-        private AuthenticationDbContext _context;
+        private readonly IRepository<User> _userRepository;
 
         /// <summary>
         /// Jwt service
@@ -33,12 +31,12 @@
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="userRepository"></param>
         /// <param name="jwtService"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public UserService(AuthenticationDbContext context, IJwtService jwtService)
+        public UserService(IRepository<User> userRepository, IJwtService jwtService)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
         }
 
@@ -52,10 +50,10 @@
             try
             {
                 //Get paginated users from db
-                List<User> paginatedUsers = await _context.Users.PageBy(x => x.Id, pagination).ToListAsync();
+                List<User> paginatedUsers = await _userRepository.List(pagination);
 
                 //Get total count of users in db
-                int totalCount = await _context.Users.CountAsync();
+                int totalCount = await _userRepository.Table.CountAsync();
 
                 return new PagedList<User>(paginatedUsers, totalCount, pagination.CurrentPage, pagination.PageSize);
             }
@@ -74,7 +72,7 @@
         {
             try
             {
-                return await _context.Users.SingleOrDefaultAsync(x => x.Id == id);
+                return await _userRepository.GetById(id);
             }
             catch
             {
@@ -91,11 +89,7 @@
         {
             try
             {
-                _context.Users.Add(user);
-
-                await _context.SaveChangesAsync();
-
-                return user.Id;
+                return await _userRepository.Insert(user);
             }
             catch
             {
@@ -113,19 +107,7 @@
         {
             try
             {
-                var oldUser = await LoadAsync(id);
-
-                if (oldUser == null)
-                    throw new NotFoundException(Errors.UserNotFound);
-
-                //Update old user fields
-                oldUser.UpdateModifiedFields(user, ref _context);
-
-                _context.Update(oldUser);
-
-                await _context.SaveChangesAsync();
-
-                return oldUser.Id;
+                return await _userRepository.Update(user);
             }
             catch
             {
@@ -142,16 +124,12 @@
         {
             try
             {
-                var user = await LoadAsync(id);
+                var user = await _userRepository.GetById(id);
 
                 if (user == null)
                     throw new NotFoundException(Errors.UserNotFound);
 
-                _context.Remove(user);
-
-                await _context.SaveChangesAsync();
-
-                return user.Id;
+                return await _userRepository.Delete(user);
             }
             catch
             {
@@ -168,7 +146,7 @@
         {
             try
             {
-                var user = await _context.Users.SingleOrDefaultAsync(x => x.Email.ToLower() == authRequest.Email.ToLower());
+                var user = await _userRepository.Table.SingleOrDefaultAsync(x => x.Email.ToLower() == authRequest.Email.ToLower());
 
                 // throw exception if user with given email was not found
                 if (user == null)

@@ -1,5 +1,5 @@
-﻿using API.Authentication.Database;
-using Data.Authentication;
+﻿using Data.Authentication;
+using Data.Authentication.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
