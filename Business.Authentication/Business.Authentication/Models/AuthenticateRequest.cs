@@ -22,6 +22,6 @@
         /// </summary>
         [Required(ErrorMessage = "Valid time is required")]
         [Range(0, 2147483647, ErrorMessage = "Min value is 0 and Max value is 2147483647")]
-        public int ValidTime { get; set; }
+        public int ValidTime { get; set; } = 1800;
     }
 }
