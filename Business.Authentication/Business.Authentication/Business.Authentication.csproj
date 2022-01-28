@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Common.Cache\Common.Cache.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.Data\Common.Data.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.ExceptionHandler\Common.ExceptionHandler\Common.ExceptionHandler.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.Extensions\Common.Extensions\Common.Extensions.csproj" />

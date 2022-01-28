@@ -6,14 +6,14 @@
     public class AuthenticateResponse
     {
         /// <summary>
-        /// Valid from
+        /// Creation date
         /// </summary>
-        public DateTime ValidFrom { get; set; }
+        public DateTime Created { get; set; }
 
         /// <summary>
-        /// Valid to
+        /// Expiration date
         /// </summary>
-        public DateTime ValidTo { get; set; }
+        public DateTime Expiration { get; set; }
 
         /// <summary>
         /// Expires in
@@ -23,11 +23,11 @@
         /// <summary>
         /// Token type
         /// </summary>
-        public string TokenType { get; set; }
+        public string AccessToken { get; set; }
 
         /// <summary>
         /// Token
         /// </summary>
-        public string Token { get; set; }
+        public string RefreshToken { get; set; }
     }
 }

@@ -53,6 +53,7 @@
                         IssuerSigningKey = new SymmetricSecurityKey(key),
                         ValidateIssuer = false,
                         ValidateAudience = false,
+                        ValidateLifetime = true,
                         // Set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
                         ClockSkew = TimeSpan.Zero
                     }, out SecurityToken validatedToken);

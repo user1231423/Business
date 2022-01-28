@@ -10,6 +10,6 @@ namespace Business.Authentication.Interfaces
 {
     public interface IJwtService
     {
-        AuthenticateResponse GenerateJwtToken(User user, int validTime);
+        Task<AuthenticateResponse> GenerateJwtToken(User user);
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace Business.Authentication.Services
 {
+    using Business.Authentication.Enums;
     using Business.Authentication.Interfaces;
     using Business.Authentication.Models;
     using Common.Data.Interfaces;
@@ -146,18 +147,27 @@
         {
             try
             {
-                var user = await _userRepository.Table.SingleOrDefaultAsync(x => x.Email.ToLower() == authRequest.Email.ToLower());
+                switch (authRequest.GrantTypeEnum)
+                {
+                    case GrantType.Password:
+                        var user = await _userRepository.Table.SingleOrDefaultAsync(x => x.Email.ToLower() == authRequest.Email.ToLower());
 
-                // throw exception if user with given email was not found
-                if (user == null)
-                    throw new NotFoundException(Errors.UserEmailNotFound);
+                        // throw exception if user with given email was not found
+                        if (user == null)
+                            throw new NotFoundException(Errors.UserEmailNotFound);
 
-                // throw exception if passwords don't match
-                if (user.Password != authRequest.Password.ToSHA256())
-                    throw new BadRequestException(Errors.UserPasswordsDontMatch);
+                        // throw exception if passwords don't match
+                        if (user.Password != authRequest.Password.ToSHA256())
+                            throw new BadRequestException(Errors.UserPasswordsDontMatch);
 
-                // authentication successful so generate jwt token and return it
-                return _jwtService.GenerateJwtToken(user, authRequest.ValidTime);
+                        // authentication successful so generate jwt token and return it
+                        return await _jwtService.GenerateJwtToken(user);
+                    case GrantType.Refresh_Token:
+                        return null;
+
+                    default:
+                        throw new BadRequestException("Current grant type is not allowed by the application");
+                }
             }
             catch
             {

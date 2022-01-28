@@ -1,27 +1,42 @@
 ﻿namespace Business.Authentication.Models
 {
+    using Business.Authentication.Enums;
+    using System;
     using System.ComponentModel.DataAnnotations;
+    using System.Text.Json.Serialization;
 
     public class AuthenticateRequest
     {
         /// <summary>
+        /// Grant type enum
+        /// </summary>
+        [JsonIgnore]
+        public GrantType GrantTypeEnum { get; protected set; }
+
+        /// <summary>
         /// Email
         /// </summary>
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Must be a valid email")]
         public string Email { get; set; }
 
         /// <summary>
         /// Password
         /// </summary>
-        [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
 
         /// <summary>
-        /// Valid time
+        /// Refresh token
         /// </summary>
-        [Required(ErrorMessage = "Valid time is required")]
-        [Range(0, 2147483647, ErrorMessage = "Min value is 0 and Max value is 2147483647")]
-        public int ValidTime { get; set; } = 1800;
+        public string RefreshToken { get; set; }
+
+        /// <summary>
+        /// Grant type
+        /// </summary>
+        public string GrantType
+        {
+            set
+            {
+                GrantTypeEnum = (GrantType)Enum.Parse(typeof(GrantType), value, true);
+            }
+        }
     }
 }
